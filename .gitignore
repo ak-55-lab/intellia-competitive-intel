@@ -1,0 +1,17 @@
+node_modules
+.next
+.next-playwright
+out
+coverage
+data/pilot-runs
+data/live-research-runs
+data/research-runs
+playwright-report
+test-results
+.env
+.env.local
+.env.*.local
+pnpm-lock.yaml
+*.log
+*.tsbuildinfo
+.DS_Store

@@ -1,0 +1,23 @@
+name: Daily external intelligence refresh
+
+on:
+  schedule:
+    - cron: "17 5 * * *"
+  workflow_dispatch:
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger the production refresh
+        env:
+          INTELLIA_REFRESH_URL: ${{ secrets.INTELLIA_REFRESH_URL }}
+          INTELLIA_REFRESH_SECRET: ${{ secrets.INTELLIA_REFRESH_SECRET }}
+        run: |
+          test -n "$INTELLIA_REFRESH_URL"
+          test -n "$INTELLIA_REFRESH_SECRET"
+          curl --fail-with-body --retry 2 --retry-delay 10 \
+            -X POST "$INTELLIA_REFRESH_URL/api/research/refresh" \
+            -H "Authorization: Bearer $INTELLIA_REFRESH_SECRET" \
+            -H "Content-Type: application/json" \
+            --data '{"trigger":"daily"}'

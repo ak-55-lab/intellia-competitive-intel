@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Intellia — Final Project Document</title>
+  <style>
+    @page { margin: .68in; }
+    body { font-family: Arial, Helvetica, sans-serif; color: #17223b; font-size: 10.5pt; line-height: 1.45; }
+    h1 { color: #1f3a5f; font-size: 30pt; margin: 0; }
+    h2 { color: #1f3a5f; font-size: 17pt; margin: 25px 0 8px; border-bottom: 2px solid #d8e2ee; padding-bottom: 4px; }
+    p { margin: 6px 0; } .cover { min-height: 7.6in; padding: .45in; background: #f6f8fb; border: 1px solid #d8e2ee; }
+    .eyebrow { color: #66809b; text-transform: uppercase; font-size: 8pt; font-weight: bold; letter-spacing: 1px; }
+    .subtitle { color: #56657d; font-size: 16pt; margin-top: 10px; max-width: 6in; }
+    .meta { margin-top: 1.1in; background: white; border-left: 5px solid #b8893b; padding: 14px 18px; width: 5.6in; }
+    .callout { background: #edf5f2; border-left: 4px solid #3d7d6a; padding: 10px 13px; margin: 10px 0; }
+    .warning { background: #faf5e9; border-left: 4px solid #b8893b; padding: 10px 13px; margin: 10px 0; }
+    table { width: 100%; border-collapse: collapse; margin: 9px 0 14px; }
+    th { text-align: left; background: #1f3a5f; color: white; font-size: 9pt; padding: 7px; }
+    td { border: 1px solid #d8e2ee; padding: 7px; vertical-align: top; } tr:nth-child(even) td { background: #f8fafc; }
+    code { font-family: Menlo, Consolas, monospace; font-size: 8.5pt; background: #eef2f6; padding: 1px 3px; }
+    .flow { border-collapse: separate; border-spacing: 0 5px; } .flow td { border: 0; text-align: center; padding: 8px; }
+    .box { color: white; background: #1f3a5f; font-weight: bold; border-radius: 5px; } .accent { background: #3d7d6a; } .gold { background: #a8762f; }
+    .arrow { color: #66809b; font-size: 16pt; font-weight: bold; padding: 0 !important; } .small { color: #56657d; font-size: 9pt; } a { color: #315d84; }
+  </style>
+</head>
+<body>
+  <section class="cover">
+    <p class="eyebrow">The Gen Academy · Week 3 · Build Your AI Agent</p>
+    <h1>Intellia</h1>
+    <p class="subtitle">A seller-facing, evidence-grounded multi-agent system for external competitive intelligence.</p>
+    <div class="meta">
+      <p><strong>Project alignment:</strong> 3A Market Research Agent — Competitor Analysis</p>
+      <p><strong>Implementation:</strong> Custom TypeScript/Next.js multi-agent harness</p>
+      <p><strong>Production app:</strong> <a href="https://intellia-competitive-intel-production.up.railway.app/research">Open Intellia</a></p>
+      <p><strong>Public code:</strong> <a href="https://github.com/ak-55-lab/intellia-competitive-intel">github.com/ak-55-lab/intellia-competitive-intel</a></p>
+      <p><strong>Author:</strong> Akash Kamineni</p>
+    </div>
+  </section>
+
+  <h2>1. Product overview</h2>
+  <p>Intellia turns public web evidence into source-linked competitive intelligence for sellers. A user enters a focal-company website, chooses one to ten competitors, and receives a company-specific signal graph, evidence matrix, battlecards, retrieval traces, regional context, and Ask Intellia follow-up answers.</p>
+  <div class="warning"><strong>Scope:</strong> external, public information only. Intellia does not access CRM data, calls, private files, employee data, or customer records.</div>
+
+  <h2>2. What the agent does</h2>
+  <table>
+    <tr><th>Stage</th><th>Autonomous work</th><th>Controlled output</th></tr>
+    <tr><td>Intake</td><td>Validates a public HTTPS website and requested competitor count.</td><td>Safe, typed run input.</td></tr>
+    <tr><td>Discovery Agent</td><td>Runs company-specific search queries, selects evidence-supported direct competitors, resolves official domains, and verifies homepage brand identity.</td><td>Live verified competitor set; no static catalog.</td></tr>
+    <tr><td>Source Collector</td><td>Searches positioning, pricing, reviews, news, partners, events, AI, hiring, finance, analyst, case-study, community, and regional lanes; retrieves selected pages.</td><td>Source ledger with traceable public evidence.</td></tr>
+    <tr><td>Deep Research Agent</td><td>Runs OpenAI web-grounded deep research when the evidence-gap policy requires it.</td><td>Cited research report or explicit warning.</td></tr>
+    <tr><td>Analysis Agents</td><td>Extract sourced claims and create battlecard positioning, objections, reframes, discovery questions, and pricing caveats.</td><td>Seller-ready structured brief.</td></tr>
+    <tr><td>QA and Persistence</td><td>Verifies evidence depth, diversity, authority, attribution, regional proof, usability, and database persistence.</td><td>Publish only when every requested competitor passes.</td></tr>
+  </table>
+
+  <h2>3. Multi-agent architecture</h2>
+  <p>Intellia is a deterministic, typed multi-agent harness. Each agent has a bounded role, passes state to the next agent, and is stopped by a quality gate rather than an unconstrained model loop.</p>
+  <table class="flow">
+    <tr><td class="box">Seller workspace<br><span class="small" style="color:white">Website + 1–10 competitors</span></td></tr>
+    <tr><td class="arrow">↓</td></tr>
+    <tr><td class="box accent">Protection and state<br><span class="small" style="color:white">Input validation · rate limit · PostgreSQL lock</span></td></tr>
+    <tr><td class="arrow">↓</td></tr>
+    <tr><td class="box">Discovery Agent<br><span class="small" style="color:white">You.com → official-domain resolution → Firecrawl brand verification</span></td></tr>
+    <tr><td class="arrow">↓</td></tr>
+    <tr><td><table><tr><td class="box">Source Collector<br><span class="small" style="color:white">Search lanes + Firecrawl</span></td><td class="box gold">Deep Research<br><span class="small" style="color:white">OpenAI cited web research</span></td><td class="box">Claim + Battlecard<br><span class="small" style="color:white">Typed synthesis</span></td></tr></table></td></tr>
+    <tr><td class="arrow">↓</td></tr>
+    <tr><td class="box accent">Evidence gate → QA Agent → PostgreSQL persistence</td></tr>
+    <tr><td class="arrow">↓</td></tr>
+    <tr><td class="box">Published seller workspace<br><span class="small" style="color:white">Graph · matrix · battlecards · sources · Ask Intellia</span></td></tr>
+  </table>
+
+  <h2>4. Agent harness, skills, and tools</h2>
+  <table>
+    <tr><th>Component</th><th>Purpose</th><th>Tools / state</th></tr>
+    <tr><td>Competitor Discovery Agent</td><td>Finds direct competitors relevant to the entered company and verifies official sites.</td><td>You.com, OpenAI selection, Firecrawl verification</td></tr>
+    <tr><td>Source Collector</td><td>Collects broad, seller-relevant external evidence with pacing, retry, caching, and per-lane warnings.</td><td>You.com, Firecrawl</td></tr>
+    <tr><td>Deep Research Agent</td><td>Fills material gaps with cited public-web research.</td><td>OpenAI Responses API, <code>o4-mini-deep-research</code></td></tr>
+    <tr><td>Claim Extractor and Battlecard Strategist</td><td>Uses only supplied evidence to create concise, cited seller guidance.</td><td>OpenAI Responses API</td></tr>
+    <tr><td>QA Agent</td><td>Applies a 100-point rubric across evidence, authority, attribution, usefulness, usability, and regional proof.</td><td>Deterministic TypeScript rubric</td></tr>
+    <tr><td>Persistence and publication</td><td>Stores runs, sources, claims, snapshots, locks, and rate-limit state; publishes completed runs asynchronously.</td><td>PostgreSQL, Drizzle, Railway</td></tr>
+    <tr><td>Ask Intellia</td><td>Answers questions from the active verified run and links sources.</td><td>OpenAI Responses API + stored run context</td></tr>
+  </table>
+
+  <h2>5. Quality, safety, and reliability controls</h2>
+  <table>
+    <tr><th>Control</th><th>Production behavior</th></tr>
+    <tr><td>Discovery quality</td><td>Requires cited search evidence, a non-directory official-looking domain, and retrieved homepage brand confirmation.</td></tr>
+    <tr><td>Evidence gate</td><td>Requires focal and competitor evidence, at least six distinct substantive sources, three source types, and regional evidence.</td></tr>
+    <tr><td>Deep research quality</td><td>Requires at least two returned URL citations; uncited output is excluded.</td></tr>
+    <tr><td>Claim integrity</td><td>Extraction is constrained to supplied evidence; each claim must reference a collected source ID.</td></tr>
+    <tr><td>QA rubric</td><td>Scores 0–100 across evidence depth/diversity/authority, claim attribution, seller usefulness, and usability. Publication requires 70+ with no blocking issue.</td></tr>
+    <tr><td>Provider resilience</td><td>Firecrawl is globally paced for the configured plan, honors <code>Retry-After</code>, and retries documented transient failures with jitter.</td></tr>
+    <tr><td>Operational behavior</td><td>Interactive requests return immediately as collecting; the always-on service finishes the run, persists it, and the UI reloads the completed result.</td></tr>
+  </table>
+
+  <h2>6. Technology stack and rationale</h2>
+  <table>
+    <tr><th>Layer</th><th>Technology</th><th>Why selected</th></tr>
+    <tr><td>End-to-end application</td><td>TypeScript, Next.js 15, React 19</td><td>One typed language for UI, APIs, orchestration, validation, and deployment. Shared contracts reduce integration errors and keep secrets server-side.</td></tr>
+    <tr><td>Seller experience</td><td>Tailwind CSS, React Flow</td><td>Fast responsive UI and an interactive, readable competitive signal graph with unread evidence indicators.</td></tr>
+    <tr><td>Agent orchestration</td><td>Custom TypeScript modules</td><td>The workflow is bounded and evidence-first, so explicit code paths, typed handoffs, and deterministic gates are easier to inspect and test than a free-form agent graph.</td></tr>
+    <tr><td>Search and retrieval</td><td>You.com Search API, Firecrawl</td><td>Live company-specific discovery plus clean public-page extraction for the evidence ledger.</td></tr>
+    <tr><td>Reasoning</td><td>OpenAI Responses API</td><td>Constrained claim extraction, grounded Q&amp;A, and optional cited deep research in one provider API.</td></tr>
+    <tr><td>Data and control state</td><td>Railway PostgreSQL, Drizzle ORM</td><td>Durable run, source, claim, lock, and rate-limit records with typed data access.</td></tr>
+    <tr><td>Hosting</td><td>Railway</td><td>Managed container deployment, environment variables, health checks, public domain, and managed PostgreSQL.</td></tr>
+  </table>
+  <div class="callout"><strong>Why not n8n, LangGraph, or Python?</strong> n8n is excellent for simple integration automation but is not the best fit for this custom interactive product and evidence model. LangGraph is valuable for larger dynamic state graphs, but Intellia’s bounded pipeline is more transparent as typed application code. Python is strong for data science; here it would split the web product stack without a material advantage. The architecture can add a worker queue, Python analytics, or a graph framework later if scale warrants it.</div>
+
+  <h2>7. Production validation</h2>
+  <table>
+    <tr><th>Validation</th><th>Result</th></tr>
+    <tr><td>Static checks</td><td><strong>Passed:</strong> TypeScript type-check, automated QA/evidence tests, optimized Next.js production build, and GitHub Actions CI.</td></tr>
+    <tr><td>Live Cority run</td><td><strong>Passed:</strong> real public-web run with 10 verified competitors, persisted as live research.</td></tr>
+    <tr><td>Live evidence coverage</td><td>17–21 evidence items per competitor; 10 completed battlecards including Intelex, Benchmark Gensuite, Enablon, Quentic, ETQ, Vector Solutions, Safesite, EcoVadis, HSI Donesafe, and SiteDocs.</td></tr>
+    <tr><td>Seller controls</td><td>Source traces, evidence matrix, regional context, new-signal read state, and Ask Intellia are available in the production workspace.</td></tr>
+  </table>
+
+  <h2>8. Human handoff and success measure</h2>
+  <p>Intellia is read-only and evidence-led. Sellers retain judgment before using positioning or claims in a deal; every output exposes source links and caveats. The system does not send messages, modify customer systems, make purchases, delete records, or externally publish information.</p>
+  <p><strong>Success measure:</strong> a seller can produce a reviewable, company-specific competitive brief for a live market set in one run, with evidence, quality checks, and source traceability rather than unsupported assertions.</p>
+</body>
+</html>
